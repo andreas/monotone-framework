@@ -1,0 +1,45 @@
+chan int[4] table;
+chan int[4] canSmoke1;
+chan int[4] canSmoke2;
+chan int[4] canSmoke3;
+
+process arbiter {
+  int x;
+
+  do ::(true) ->
+    if
+    ::(true) -> canSmoke1!1
+    ::(true) -> canSmoke2!1
+    ::(true) -> canSmoke3!1
+    fi;
+    
+    table?x;
+  od
+}
+
+process smoker1 {
+  int x;
+  
+  do ::(true) ->
+    canSmoke1?x;
+    table!1
+  od
+}
+
+process smoker2 {
+  int x;
+  
+  do ::(true) ->
+    canSmoke2?x;
+    table!1
+  od
+}
+
+process smoker3 {
+  int x;
+  
+  do ::(true) ->
+    canSmoke3?x;
+    table!1
+  od
+}

@@ -1,0 +1,36 @@
+process philosopher0 {
+  int status;
+  int eat;
+
+  do :: (true) ->
+    eat := 0;
+    pif
+    :: 0.5 ->
+    	getFork1?status;
+    	do :: (eat = 0 && getFork2?status) -> eat:=1; putFork2!1 od;
+    	putFork1!1
+    :: 0.5 ->
+    	getFork2?status;
+    	do :: (eat = 0 && getFork1?status) -> eat:=1; putFork1!1 od;
+    	putFork2!1
+    fip
+  od
+}
+
+process fork1 {
+  int x;
+  
+  do :: (true) ->
+  	getFork1!1;
+  	putFork1?x
+  od
+}
+
+process fork2 {
+  int x;
+  
+  do :: (true) ->
+  	getFork2!1;
+  	putFork2?x
+  od
+}

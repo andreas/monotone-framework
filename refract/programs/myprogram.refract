@@ -1,0 +1,29 @@
+chan int[5] c;
+chan int[5] d;
+
+process bar {
+	int y;
+	int z;
+	
+	skip;
+	if
+	::(true) -> y := 0
+	::(true) -> y := 5
+	fi;
+	c!y;
+	d?z
+}
+
+process foo {
+	int x;
+	int y;
+	
+	x:=10;
+	if
+	::(true) ->	c?x
+	::(true) -> skip
+	fi;
+	if
+	::(x < 5 && y < 2 * x) -> d!x
+	fi
+}

@@ -1,0 +1,22 @@
+chan int[10] c;
+chan int[10] d;
+
+process p1 {
+	int x;
+	
+	x := 5;
+	do :: (true) ->
+		d?x;
+		if :: (x=3) -> c!1 :: (x=4) -> c!2 fi
+	od
+}
+
+process p2 {
+	int y;
+	
+	y := 3;
+	do :: (true) ->
+		pif :: 0.5 -> d!3 :: 0.5 -> d!4 fip;
+		c?y
+	od
+}

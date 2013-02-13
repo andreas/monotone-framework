@@ -1,0 +1,54 @@
+chan int[2] com12;
+chan int[2] com23;
+chan int[2] com31;
+
+process processor1 {
+  int x;
+  int y;
+  
+  x := rand(0, 1);
+  
+  do ::(true) ->
+    com12!x;
+    com31?y;
+    
+    if
+    ::(x  = y) -> x := rand(0, 1)
+    ::(x ~= y) -> x := y
+    fi
+  od
+}
+
+process processor2 {
+  int x;
+  int y;
+  
+  x := rand(0, 1);
+
+  do ::(true) ->
+    com23!x;
+    com12?y;
+    
+    if
+    ::(x  = y) -> x := rand(0, 1)
+    ::(x ~= y) -> x := y
+    fi
+  od
+}
+
+process processor3 {
+  int x;
+  int y;
+  
+  x := rand(0, 1);
+  
+  do ::(true) ->
+    com31!x;
+    com23?y;
+    
+    if
+    ::(x  = y) -> x := rand(0, 1)
+    ::(x ~= y) -> x := y
+    fi
+  od
+}

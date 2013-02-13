@@ -1,0 +1,24 @@
+chan int[10] c;
+chan int[10] d;
+
+process p1 {
+	int x;
+	
+	d!1;
+	do :: (true) ->
+		c?x;
+		d!1
+	od;
+	skip
+}
+
+process p2 {
+	int y;
+	
+	c!1;
+	do :: (true) ->
+		d?y;
+		c!1
+	od;
+	skip
+}

@@ -1,0 +1,56 @@
+chan int[1] getFork0;
+chan int[1] putFork0;
+chan int[1] getFork1;
+chan int[1] putFork1;
+
+process fork0 {
+  int x;
+  
+  do :: (true) ->
+  	getFork0!1;
+  	putFork0?x
+  od
+}
+
+process fork1 {
+  int x;
+  
+  do :: (true) ->
+  	getFork1!1;
+  	putFork1?x
+  od
+}
+
+process philosopher0 {
+  int status;
+
+  do :: (true) ->
+    pif
+    :: 0.5 ->
+    	getFork0?status;
+    	if :: (true && getFork1?status) -> putFork1!1 ::(|getFork1| = 0) -> skip fi;
+    	putFork0!1
+    :: 0.5 ->
+    	getFork1?status;
+    	if :: (true && getFork0?status) -> putFork0!1 ::(|getFork0| = 0) -> skip fi;
+    	putFork1!1
+    fip
+  od
+}
+
+process philosopher1 {
+  int status;
+
+  do :: (true) ->
+    pif
+    :: 0.5 ->
+    	getFork1?status;
+    	if :: (true && getFork0?status) -> putFork0!1 ::(|getFork0| = 0) -> skip fi;
+    	putFork1!1
+    :: 0.5 ->
+    	getFork0?status;
+    	if :: (true && getFork1?status) -> putFork1!1 ::(|getFork1| = 0) -> skip fi;
+    	putFork0!1
+    fip
+  od
+}

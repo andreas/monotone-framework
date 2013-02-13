@@ -1,0 +1,84 @@
+chan int[10] ids_0_1;
+chan int[10] ids_1_0;
+chan int[10] hop_0_1;
+chan int[10] hop_1_0;
+
+process processor0 {
+  int active := 1;
+  int id := 0;
+  int msg_id;
+  int msg_hop;
+  
+  pif
+  :: 0.5 -> id := 0
+  :: 0.5 -> id := 1
+  fip;
+  
+  ids_0_1!id;
+  hop_0_1!1;
+  
+  do :: (true) ->
+    ids_1_0?msg_id;
+    hop_1_0?msg_hop;
+    
+    if
+    :: (active = 0 && msg_hop < 2) ->
+      ids_0_1!msg_id;
+      hop_0_1!msg_hop+1
+    :: (active = 1 && msg_hop = 2) -> skip
+    :: (active = 1 && msg_id < id) -> skip
+    :: (active = 1 && msg_id > id && msg_hop < 2) ->
+      active := 0;
+      ids_0_1!msg_id;
+      hop_0_1!msg_hop+1
+    :: (active = 1 && msg_id = id && msg_hop < 2) ->
+      pif
+      :: 0.5 -> id := 0
+      :: 0.5 -> id := 1
+      fip;
+      
+      ids_0_1!id;
+      hop_0_1!1
+    fi
+  od
+}
+
+process processor1 {
+  int active := 1;
+  int id := 0;
+  int msg_id;
+  int msg_hop;
+  
+  pif
+  :: 0.5 -> id := 0
+  :: 0.5 -> id := 1
+  fip;
+  
+  ids_1_0!id;
+  hop_1_0!1;
+  
+  do :: (true) ->
+    ids_0_1?msg_id;
+    hop_0_1?msg_hop;
+    
+    if
+    :: (active = 0 && msg_hop < 2) ->
+      ids_1_0!msg_id;
+      hop_1_0!msg_hop+1
+    :: (active = 1 && msg_hop = 2) -> skip
+    :: (active = 1 && msg_id < id) -> skip
+    :: (active = 1 && msg_id > id && msg_hop < 2) ->
+      active := 0;
+      ids_1_0!msg_id;
+      hop_1_0!msg_hop+1
+    :: (active = 1 && msg_id = id && msg_hop < 2) ->
+      pif
+      :: 0.5 -> id := 0
+      :: 0.5 -> id := 1
+      fip;
+      
+      ids_1_0!id;
+      hop_1_0!1
+    fi
+  od
+}
